@@ -3,6 +3,7 @@
 #define TASA_REFRESCO 60
 
 #include <iostream>	
+#include <vector>
 #include "include/codebase.h"
 #include "include/header.h"
 
@@ -27,6 +28,7 @@ bool mapa = true;
 static GLuint texturas[15];
 Asteroide asteroides[3];
 float rotacion_tierra = 0;
+vector<Bullet> bullets;
 
 void init_luces(){
 
@@ -54,13 +56,6 @@ void init_luces(){
 	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 25.0);
 	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 10.0);
 	glEnable(GL_LIGHT2);	
-
-    GLfloat mat_diffuse[] = {0.5,0.5,0.5,1.0};          //Kd
-    GLfloat mat_specular[] = {0.8,0.8,0.8,1.0};         //Ks    
-    GLfloat mat_shininess[] = {100.0};                  //n
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);  
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);  
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 }
 
@@ -155,7 +150,27 @@ void init_texturas(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);					
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
+
+	glBindTexture(GL_TEXTURE_2D, texturas[10]);
+	loadImageFile((char*)"resources/gold.jpg");
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);		
+
+	glBindTexture(GL_TEXTURE_2D, texturas[11]);
+	loadImageFile((char*)"resources/mexico.jpg");
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);			
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -186,6 +201,7 @@ void init_asteroides(){
 void init(){
     cout << glGetString(GL_VERSION) << endl;
 	cout << "Presiona la tecla 'm' para activar o desactivar el mapa" << endl;
+	cout << "Presiona la tecla 'd' para disparar" << endl;
 	
 	init_luces();
 	init_texturas();
@@ -220,6 +236,13 @@ void display(){
 
     gluLookAt(camara_pos_x,camara_pos_y,camara_pos_z,camara_lookat_x,camara_lookat_y,camara_lookat_z,0,0,1);
 	set_posicion_luces();
+
+    GLfloat mat_diffuse[] = {0.5,0.5,0.5,1.0};          //Kd
+    GLfloat mat_specular[] = {0.8,0.8,0.8,1.0};         //Ks    
+    GLfloat mat_shininess[] = {100.0};                  //n
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);  
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);  
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[4]);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -316,6 +339,47 @@ void display(){
 
 	glPopMatrix();
 
+	glPushMatrix();
+
+		glTranslatef(0,50,0);
+
+		GLfloat bandera11[3] = {0.1,-0.1,0};
+		GLfloat bandera12[3] = {0.1,0.1,0};
+		GLfloat bandera13[3] = {0.1,0.1,20};
+		GLfloat bandera14[3] = {0.1,-0.1,20};
+
+		quad(bandera11, bandera12, bandera13, bandera14, 20,20);
+
+		glRotatef(90,0,0,1);
+
+		quad(bandera11, bandera12, bandera13, bandera14, 20,20);
+
+		glRotatef(90,0,0,1);
+
+		quad(bandera11, bandera12, bandera13, bandera14, 20,20);
+
+		glRotatef(90,0,0,1);
+
+		quad(bandera11, bandera12, bandera13, bandera14, 20,20);
+
+	glPopMatrix();
+
+	glBindTexture(GL_TEXTURE_2D, texturas[11]);
+	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
+
+	glPushMatrix();
+
+		glTranslatef(4.5,50,16.5);
+
+		GLfloat bandera21[3] = {-4.5,0,-3.5};
+		GLfloat bandera22[3] = {4.5,0,-3.5};
+		GLfloat bandera23[3] = {4.5,0,3.5};
+		GLfloat bandera24[3] = {-4.5,0,3.5};
+
+		quad(bandera21, bandera22, bandera23, bandera24, 20,20);
+
+	glPopMatrix();
+
 	glBindTexture(GL_TEXTURE_2D, texturas[3]);
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 
@@ -338,6 +402,33 @@ void display(){
 		mi_esfera(20,15.0f);
 
 	glPopMatrix();
+
+	glBindTexture(GL_TEXTURE_2D, texturas[10]);
+	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
+
+    GLfloat mat_emission[] = {0.8,0.8,0.8};
+	GLfloat mat_diffuse2[] = {0.7,0.7,0.7,1.0};         //Kd
+    GLfloat mat_specular2[] = {1,1,1,1.0};         		//Ks    
+    GLfloat mat_shininess2[] = {50.0};                  //n
+	glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);  
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse2);  
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular2);  
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess2);
+
+	for(int i = 0; i < bullets.size(); i++){
+		glPushMatrix();
+
+			glTranslatef(bullets.at(i).position.x, bullets.at(i).position.y, bullets.at(i).position.z);
+			mi_esfera(10, 0.05);
+
+		glPopMatrix();
+	}
+	
+	GLfloat mat_emission2[] = {0,0,0};
+	glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission2); 
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);  
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);  
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[5]);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -523,6 +614,12 @@ void update(){
 	if(asteroides[2].translate.y <= -100)
 		asteroides[2].translate.y = 100;
 
+	for(int i = 0; i < bullets.size(); i++){
+		bullets.at(i).position.y += (30 * tiempo_transcurrido) * sin(deg_to_rad(bullets.at(i).angulo_cabeceo)) * cos(deg_to_rad(bullets.at(i).angulo_guino));
+		bullets.at(i).position.x += (30 * tiempo_transcurrido) * sin(deg_to_rad(bullets.at(i).angulo_cabeceo)) * sin(deg_to_rad(bullets.at(i).angulo_guino));	
+		bullets.at(i).position.z += (30 * tiempo_transcurrido) * cos(deg_to_rad(bullets.at(i).angulo_cabeceo));
+	}
+
 	rotacion_tierra += tiempo_transcurrido * 10;
 
 	hora_anterior = hora_actual;
@@ -598,13 +695,18 @@ void onKey(unsigned char key, int x, int y){
 		}
 		mapa = !mapa;
 	}
+
+	if(key == 'd'){
+		Bullet bullet = Bullet(Vec3(camara_lookat_x, camara_lookat_y, camara_lookat_z), angulo_guino, angulo_cabeceo);
+		bullets.push_back(bullet);
+	}
 }
 
 int main(int argc, char** argv){
 	FreeImage_Initialise();
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(1200, 800);
+	glutInitWindowSize(1000, 800);
 	glutInitWindowPosition(100, 100);
 
 	// Crear ventana

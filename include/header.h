@@ -17,6 +17,14 @@ class Asteroide{
 		Asteroide(Vec3 t = Vec3(0,0,0), Vec3 r = Vec3(0,0,0), float g = 0, Vec3 s = Vec3(1,1,1)): translate(t), rotate(r), rotate_grados(g), scale(s) {}
 };
 
+class Bullet{
+	public:
+		Vec3 position = Vec3(0,0,0);
+		float angulo_guino = 0;
+		float angulo_cabeceo = 0;
+		Bullet(Vec3 pos, float ag, float ac): position(pos), angulo_guino(ag), angulo_cabeceo(ac) {}
+};
+
 float deg_to_rad(float degrees){
 	return degrees * PI / 180;
 }

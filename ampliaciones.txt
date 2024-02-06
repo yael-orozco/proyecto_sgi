@@ -1,8 +1,20 @@
 MEJORAS EN LA APARIENCIA:
 - 2 faros solidarios a la nave, uno a la izquierda y otro a la derecha
-- Variedad de texturas, 1 para el cockpit, 1 para la superficie, 1 para la plataforma, 1 para los asteroides, 1 para la tierra, 1 para jupiter y 1 para el fondo estelar
+- Variedad de texturas, 1 para el cockpit, 1 para la superficie, 1 para la plataforma, 1 para los asteroides, 1 para la tierra, 1 para jupiter, 1 para el fondo estelar, 1 para el mini mapa,
+  1 para e indicador de posicion, 1 para la aguja del velocimetro, 1 para las balas y 1 para la bandera.
 - Fondo estelar
+- Uso de material distinto para las balas
 
 MEJORAS EN LA GEOMETRÍA:
 - Modelo de asteroide con 16 caras
 - Funcion propia de creacion de una esfera con coordenadas de textura a partir de una resolucion y un radio
+- Bandera izada
+
+MEJORAS EN LAS VISTAS:
+- Mini mapa con opcion de ocultarlo
+
+MEJORAS EN LA ANIMACION:
+- Velocimetro funcional en el cockpit
+
+MEJORAS DE LA INTERFAZ:
+- Al presionar la tecla 'd' dispara
