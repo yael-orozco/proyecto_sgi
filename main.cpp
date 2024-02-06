@@ -3,7 +3,6 @@
 #define TASA_REFRESCO 60
 
 #include <iostream>	
-#include <sstream>
 #include "include/codebase.h"
 #include "include/header.h"
 
@@ -69,7 +68,7 @@ void init_texturas(){
 
 	glGenTextures(10, texturas);
 	glBindTexture(GL_TEXTURE_2D, texturas[0]);
-	loadImageFile("resources/superficie.jpg");
+	loadImageFile((char*)"resources/superficie.jpg");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -79,7 +78,7 @@ void init_texturas(){
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[1]);
-	loadImageFile("resources/plataforma.jpg");
+	loadImageFile((char*)"resources/plataforma.jpg");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -89,7 +88,7 @@ void init_texturas(){
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[2]);
-	loadImageFile("resources/meteor.jpg");
+	loadImageFile((char*)"resources/meteor.jpg");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -99,7 +98,7 @@ void init_texturas(){
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[3]);
-	loadImageFile("resources/earth.jpg");
+	loadImageFile((char*)"resources/earth.jpg");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -109,7 +108,7 @@ void init_texturas(){
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[6]);
-	loadImageFile("resources/jupiter.jpg");
+	loadImageFile((char*)"resources/jupiter.jpg");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -119,7 +118,7 @@ void init_texturas(){
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[4]);
-	loadImageFile("resources/sky.jpg");
+	loadImageFile((char*)"resources/sky.jpg");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -127,7 +126,7 @@ void init_texturas(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[5]);
-	loadImageFile("resources/cockpit.png");
+	loadImageFile((char*)"resources/cockpit.png");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -135,7 +134,7 @@ void init_texturas(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[7]);
-	loadImageFile("resources/minimap.png");
+	loadImageFile((char*)"resources/minimap.png");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -143,7 +142,7 @@ void init_texturas(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 
 	glBindTexture(GL_TEXTURE_2D, texturas[8]);
-	loadImageFile("resources/cursor.png");
+	loadImageFile((char*)"resources/cursor.png");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -151,7 +150,7 @@ void init_texturas(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 
 	glBindTexture(GL_TEXTURE_2D, texturas[9]);
-	loadImageFile("resources/pin.png");
+	loadImageFile((char*)"resources/pin.png");
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
@@ -373,12 +372,12 @@ void display(){
 
 		int viewport[4];
 		glGetIntegerv(GL_VIEWPORT, viewport);
-		char* text = "LUCES: ON";
+		char* text = (char*)"LUCES: ON";
 		if(luces){
-			text = "LUCES: ON";
+			text = (char*)"LUCES: ON";
 		}
 		else{
-			text = "LUCES: OFF";
+			text = (char*)"LUCES: OFF";
 		}
 
 		texto(viewport[2] / 2 - 50, viewport[3] - 30, text, BLANCO, GLUT_BITMAP_HELVETICA_18, false);
