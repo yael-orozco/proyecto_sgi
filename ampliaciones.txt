@@ -1,0 +1,8 @@
+MEJORAS EN LA APARIENCIA:
+- 2 faros solidarios a la nave, uno a la izquierda y otro a la derecha
+- Variedad de texturas, 1 para el cockpit, 1 para la superficie, 1 para la plataforma, 1 para los asteroides, 1 para la tierra, 1 para jupiter y 1 para el fondo estelar
+- Fondo estelar
+
+MEJORAS EN LA GEOMETRÍA:
+- Modelo de asteroide con 16 caras
+- Funcion propia de creacion de una esfera con coordenadas de textura a partir de una resolucion y un radio

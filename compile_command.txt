@@ -1,0 +1,3 @@
+g++ -o main main.cpp -I/opt/homebrew/Cellar/freeglut/3.4.0/include -I/opt/homebrew/Cellar/freeimage/3.18.0/include -L/opt/homebrew/lib -framework OpenGL -framework GLUT -lfreeimage
+
+g++ -o aux aux.cpp -I/opt/homebrew/Cellar/freeglut/3.4.0/include -I/opt/homebrew/Cellar/freeimage/3.18.0/include -L/opt/homebrew/lib -framework OpenGL -framework GLUT -lfreeimage
