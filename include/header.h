@@ -14,6 +14,8 @@ class Asteroide{
 		Vec3 scale = Vec3(1,1,1);
         float rotation_speed = 10;
         float velocidad = 5;
+		float angulo_guino = 0;
+		float angulo_cabeceo = 0;
 		Asteroide(Vec3 t = Vec3(0,0,0), Vec3 r = Vec3(0,0,0), float g = 0, Vec3 s = Vec3(1,1,1)): translate(t), rotate(r), rotate_grados(g), scale(s) {}
 };
 
@@ -22,7 +24,8 @@ class Bullet{
 		Vec3 position = Vec3(0,0,0);
 		float angulo_guino = 0;
 		float angulo_cabeceo = 0;
-		Bullet(Vec3 pos, float ag, float ac): position(pos), angulo_guino(ag), angulo_cabeceo(ac) {}
+		float distance_traveled = 0;
+		Bullet(Vec3 pos, float ag, float ac): position(pos), angulo_guino(ag), angulo_cabeceo(ac), distance_traveled(0) {}
 };
 
 float deg_to_rad(float degrees){

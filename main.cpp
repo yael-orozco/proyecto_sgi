@@ -1,6 +1,6 @@
 #define PROYECTO "Trabajo Final"
-#define PI 3.141592
 #define TASA_REFRESCO 60
+#define ASTEROIDES 5
 
 #include <iostream>	
 #include <vector>
@@ -12,21 +12,21 @@ using namespace cb;
 
 static float VELOCIDAD_MAX = 16.0;
 float velocidad_nave = 0.0;
-float camara_pos_x = 0;
-float camara_pos_y = 0;
-float camara_pos_z = 2;
-float camara_lookat_x = 0;
-float camara_lookat_y = 0;
-float camara_lookat_z = 0;
+Vec3 camara_pos = Vec3(0,0,5);
+Vec3 camara_lookat = Vec3();
+Vec3 nave_lookat = Vec3();
 float angulo_cabeceo = 90;
 float angulo_guino = 0;
+float ag_aux = 0;
+float ac_aux = 0;
 int raton_y = 0;
 int raton_x = 0;
 bool luces = true;
 bool cockpit = true;
 bool mapa = true;
+bool passiveMotion = true;
 static GLuint texturas[15];
-Asteroide asteroides[3];
+Asteroide asteroides[ASTEROIDES];
 float rotacion_tierra = 0;
 vector<Bullet> bullets;
 
@@ -61,129 +61,56 @@ void init_luces(){
 
 void init_texturas(){
 
-	glGenTextures(10, texturas);
+	glGenTextures(15, texturas);
 	glBindTexture(GL_TEXTURE_2D, texturas[0]);
-	loadImageFile((char*)"resources/superficie.jpg");
+	loadImageFile((char*)"resources/superficie.png");
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-	glBindTexture(GL_TEXTURE_2D, texturas[1]);
+	glBindTexture(GL_TEXTURE_2D, texturas[1]);  
 	loadImageFile((char*)"resources/plataforma.jpg");
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[2]);
 	loadImageFile((char*)"resources/meteor.jpg");
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
 	glBindTexture(GL_TEXTURE_2D, texturas[3]);
 	loadImageFile((char*)"resources/earth.jpg");
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[6]);
 	loadImageFile((char*)"resources/jupiter.jpg");
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
 	glBindTexture(GL_TEXTURE_2D, texturas[4]);
 	loadImageFile((char*)"resources/sky.jpg");
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[5]);
 	loadImageFile((char*)"resources/cockpit.png");
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
 	glBindTexture(GL_TEXTURE_2D, texturas[7]);
 	loadImageFile((char*)"resources/minimap.png");
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 
 	glBindTexture(GL_TEXTURE_2D, texturas[8]);
 	loadImageFile((char*)"resources/cursor.png");
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
-
 	glBindTexture(GL_TEXTURE_2D, texturas[9]);
-	loadImageFile((char*)"resources/pin.png");
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
+	loadImageFile((char*)"resources/pin.png");	
 
 	glBindTexture(GL_TEXTURE_2D, texturas[10]);
 	loadImageFile((char*)"resources/gold.jpg");
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);		
-
 	glBindTexture(GL_TEXTURE_2D, texturas[11]);
-	loadImageFile((char*)"resources/mexico.jpg");
+	loadImageFile((char*)"resources/mexico.jpg");		
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);			
-
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, texturas[12]);
+	loadImageFile((char*)"resources/wall.png");
 
 	glEnable(GL_TEXTURE_2D);
 }
 
 void init_asteroides(){
 
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < ASTEROIDES; i++){
 		asteroides[i] = Asteroide();
-		asteroides[i].translate.x = getRandomFloat(-50,-25);
-		asteroides[i].translate.y = getRandomFloat(-50,50);
-		asteroides[i].translate.z = getRandomFloat(0,50);
+		asteroides[i].translate.x = getRandomFloat(-200,-25);
+		asteroides[i].translate.y = getRandomFloat(-200,200);
+		asteroides[i].translate.z = getRandomFloat(15,75);
 
 		float scale = getRandomFloat(0.25,3);
 		asteroides[i].scale.x = scale;
@@ -195,6 +122,9 @@ void init_asteroides(){
 		asteroides[i].rotate = rotation.normalize();
 		asteroides[i].rotate_grados = getRandomFloat(0,360);
 		asteroides[i].velocidad = getRandomFloat(6,20);
+
+		asteroides[i].angulo_cabeceo = getRandomFloat(75,105);
+		asteroides[i].angulo_guino = getRandomFloat(0,360);
 	}
 }
 
@@ -202,6 +132,7 @@ void init(){
     cout << glGetString(GL_VERSION) << endl;
 	cout << "Presiona la tecla 'm' para activar o desactivar el mapa" << endl;
 	cout << "Presiona la tecla 'd' para disparar" << endl;
+	cout << "Para mover la cabeza mantén presionado algún botón del ratón en lo que lo mueves" << endl;
 	
 	init_luces();
 	init_texturas();
@@ -216,12 +147,12 @@ void set_posicion_luces(){
 	GLfloat posicion[] = {0.0, 0.0, 1.0, 0.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, posicion);
 
-	GLfloat posicion2[]={camara_lookat_x + (-cos(deg_to_rad(angulo_guino)) * 3), camara_lookat_y + sin(deg_to_rad(angulo_guino)) * 3, camara_lookat_z, 1.0};
-	GLfloat dir_central[]={sin(deg_to_rad(angulo_guino)) * sin(deg_to_rad(angulo_cabeceo)), cos(deg_to_rad(angulo_guino)) * sin(deg_to_rad(angulo_cabeceo)), cos(deg_to_rad(angulo_cabeceo))};
+	GLfloat posicion2[]={camara_lookat.x + (-cos(deg_to_rad(ag_aux)) * 5), camara_lookat.y + sin(deg_to_rad(ag_aux)) * 5, camara_lookat.z, 1.0};
+	GLfloat dir_central[]={sin(deg_to_rad(ag_aux)) * sin(deg_to_rad(ac_aux)), cos(deg_to_rad(ag_aux)) * sin(deg_to_rad(ac_aux)), cos(deg_to_rad(ac_aux))};
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, dir_central);
 	glLightfv(GL_LIGHT1,GL_POSITION,posicion2);		// Luz focal 
 
-	GLfloat posicion3[]={camara_lookat_x + cos(deg_to_rad(angulo_guino)) * 3, camara_lookat_y + (-sin(deg_to_rad(angulo_guino)) * 3), camara_lookat_z, 1.0};
+	GLfloat posicion3[]={camara_lookat.x + cos(deg_to_rad(ag_aux)) * 5, camara_lookat.y + (-sin(deg_to_rad(ag_aux)) * 5), camara_lookat.z, 1.0};
 	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, dir_central);
 	glLightfv(GL_LIGHT2,GL_POSITION,posicion3);		// Luz focal 
 
@@ -234,7 +165,7 @@ void display(){
     glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-    gluLookAt(camara_pos_x,camara_pos_y,camara_pos_z,camara_lookat_x,camara_lookat_y,camara_lookat_z,0,0,1);
+    gluLookAt(camara_pos.x,camara_pos.y,camara_pos.z,camara_lookat.x,camara_lookat.y,camara_lookat.z,0,0,1);
 	set_posicion_luces();
 
     GLfloat mat_diffuse[] = {0.5,0.5,0.5,1.0};          //Kd
@@ -245,36 +176,34 @@ void display(){
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 	glBindTexture(GL_TEXTURE_2D, texturas[4]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-	glPushMatrix();
-
-		mi_esfera(50, 100);
-
-	glPopMatrix();
-
-	glBindTexture(GL_TEXTURE_2D, texturas[0]);
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
 	glPushMatrix();
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		GLfloat point1[3] = {100.0, 100.0, 0.0};
-		GLfloat point2[3] = {-100.0, 100.0, 0.0};
-		GLfloat point3[3] = {-100.0, -100.0, 0.0};
-		GLfloat point4[3] = {100.0, -100.0, 0.0};
-
-		quad(point1, point2, point3, point4, 500, 500);
+		glRotatef(45,0,1,0);
+		mi_esfera(50, 2500);
 
 	glPopMatrix();
 
 	glBindTexture(GL_TEXTURE_2D, texturas[2]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < ASTEROIDES; i++){
 
 		glPushMatrix();
 
@@ -288,10 +217,17 @@ void display(){
 	}
 
 	glBindTexture(GL_TEXTURE_2D, texturas[1]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 
 	glPushMatrix();						// PLATAFORMA	
-		
 		glNormal3f(0,0,1);
 		glScalef(3,3,1);
 
@@ -365,6 +301,13 @@ void display(){
 	glPopMatrix();
 
 	glBindTexture(GL_TEXTURE_2D, texturas[11]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 
 	glPushMatrix();
@@ -381,11 +324,19 @@ void display(){
 	glPopMatrix();
 
 	glBindTexture(GL_TEXTURE_2D, texturas[3]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 
 	glPushMatrix();
 
-		glTranslatef(35,0,25);
+		glTranslatef(70,0,25);
 		glRotatef(23.5,0,1,0);
 		glRotatef(rotacion_tierra, 0,0,1);
 		mi_esfera(20,3.0f);
@@ -393,17 +344,32 @@ void display(){
 	glPopMatrix();
 
 	glBindTexture(GL_TEXTURE_2D, texturas[6]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 
 	glPushMatrix();
 
-		glTranslatef(-50,-25,60);
+		glTranslatef(-100,-50,60);
 		glRotatef(rotacion_tierra * 0.75, 0,0,1);
 		mi_esfera(20,15.0f);
 
 	glPopMatrix();
 
 	glBindTexture(GL_TEXTURE_2D, texturas[10]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 
     GLfloat mat_emission[] = {0.8,0.8,0.8};
@@ -423,38 +389,151 @@ void display(){
 
 		glPopMatrix();
 	}
-	
+
 	GLfloat mat_emission2[] = {0,0,0};
 	glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission2); 
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);  
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);  
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);  
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);  
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-	glBindTexture(GL_TEXTURE_2D, texturas[5]);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, texturas[0]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
+
+	glPushMatrix();
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		GLfloat point1[3] = {200.0, 200.0, 0.0};
+		GLfloat point2[3] = {-200.0, 200.0, 0.0};
+		GLfloat point3[3] = {-200.0, -200.0, 0.0};
+		GLfloat point4[3] = {200.0, -200.0, 0.0};
+
+		quad(point1, point2, point3, point4, 500, 500);
+
+	glPopMatrix();
+
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+
 	if(cockpit){
+		glBindTexture(GL_TEXTURE_2D, texturas[5]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDepthMask(GL_FALSE);
 
 		glPushMatrix();
 
-			glTranslatef(camara_lookat_x, camara_lookat_y, camara_lookat_z);
-			glRotatef(-angulo_guino, 0,0,1);
-			glRotatef(-(angulo_cabeceo - 90),1,0,0);
-			glScalef(0.2,0.2,0.2);
+			glTranslatef(camara_pos.x, camara_pos.y, camara_pos.z);
 
-			GLfloat nave11[3] = {-3,0,-2};
-			GLfloat nave12[3] = {3,0,-2};
-			GLfloat nave13[3] = {3,0,2};
-			GLfloat nave14[3] = {-3,0,2};
+			if(passiveMotion){
+				ac_aux = angulo_cabeceo;
+				ag_aux = angulo_guino;
+			}	
 
-			quad(nave11, nave12, nave13, nave14, 30,30);
+			glRotatef(-ag_aux, 0,0,1);
+			glRotatef(-(ac_aux - 90),1,0,0);
+			glTranslatef(0,1.5,0);	
+			glPushMatrix();
 
-		glPopMatrix();
+				GLfloat nave1_1[3] = {-3,3,-2};
+				GLfloat nave1_2[3] = {3,3,-2};
+				GLfloat nave1_3[3] = {3,3,2};
+				GLfloat nave1_4[3] = {-3,3,2};
 
+				quad(nave1_1, nave1_2, nave1_3, nave1_4, 20, 20);
+
+				glBindTexture(GL_TEXTURE_2D, texturas[12]);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
+
+				glRotatef(90, 0, 0, 1);
+				quad(nave1_1, nave1_2, nave1_3, nave1_4, 20, 20);
+
+				glRotatef(90, 0, 0, 1);
+				quad(nave1_1, nave1_2, nave1_3, nave1_4, 20, 20);
+
+				glRotatef(90, 0, 0, 1);
+				quad(nave1_1, nave1_2, nave1_3, nave1_4, 20, 20);
+
+			glPopMatrix();
+
+			glBindTexture(GL_TEXTURE_2D, texturas[1]);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);			
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
+
+			glPushMatrix();
+
+				GLfloat nave2_1[3] = {3,3,-2};
+				GLfloat nave2_2[3] = {-3,3,-2};
+				GLfloat nave2_3[3] = {-3,-3,-2};
+				GLfloat nave2_4[3] = {3,-3,-2};
+				
+				quad(nave2_1, nave2_2, nave2_3, nave2_4, 20, 20);
+
+				glTranslatef(0, 0, 4);
+				quad(nave2_1, nave2_2, nave2_3, nave2_4, 20, 20);
+
+			glPopMatrix();
+
+			glBindTexture(GL_TEXTURE_2D, texturas[9]);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
+
+			glPushMatrix();
+
+				glTranslatef(-0.5, 0, -0.6);
+				glRotatef(velocidad_nave * 10 - 100,0,1,0);
+				glScalef(0.1, 0.1, 0.1);
+
+				GLfloat aguja1[3] = {-0.5,3,-0.1};
+				GLfloat aguja2[3] = {0.5,3,-0.1};
+				GLfloat aguja3[3] = {0.5,3,0.9};
+				GLfloat aguja4[3] = {-0.5,3,0.9};
+
+				quad(aguja1, aguja2, aguja3, aguja4);
+
+			glPopMatrix();
+
+		glPopMatrix();			
+		
 		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 	}
@@ -483,6 +562,12 @@ void display(){
 		glLoadIdentity();
 		if(mapa){
 			glBindTexture(GL_TEXTURE_2D, texturas[7]);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
+
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 
@@ -505,9 +590,27 @@ void display(){
 
 			glBindTexture(GL_TEXTURE_2D, texturas[8]);
 
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
+
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
+
 			glPushMatrix();
 
-				glTranslatef(viewport[2] - 100 + camara_pos_x, camara_pos_y + 100, 0);
+				float pos_y = camara_pos.y / 2 + 100;
+				if(pos_y >= 200)
+					pos_y = 200;
+
+				float pos_x = viewport[2] - 100 + camara_pos.x / 2;
+				if(pos_x >= viewport[2])
+					pos_x = viewport[2];
+				if(pos_x <= viewport[2] - 200)
+					pos_x = viewport[2] - 200;
+
+				glTranslatef(pos_x, pos_y, 0);
 				glRotatef(-angulo_guino, 0,0,1);
 
 				glBegin(GL_POLYGON);
@@ -529,46 +632,14 @@ void display(){
 			glDisable(GL_BLEND);
 		}
 
-		glBindTexture(GL_TEXTURE_2D, texturas[9]);
-
-		if(cockpit){
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDepthMask(GL_FALSE);
-
-			glPushMatrix();
-
-				glTranslatef(viewport[2] / 2 - viewport[3] / 2.9, viewport[3] / 11,0);
-				glScalef(viewport[3] / 250, viewport[3] / 250 ,1);
-				glRotatef(100,0,0,1);
-				glRotatef(-velocidad_nave * 10,0,0,1);
-
-				glBegin(GL_POLYGON);
-
-					glTexCoord2f(0,0);
-					glVertex2i(-10,-3);
-					glTexCoord2f(0,1);
-					glVertex2i(-10,17);
-					glTexCoord2f(1,1);
-					glVertex2i(10,17);
-					glTexCoord2f(1,0);
-					glVertex2i(10,-3);
-
-				glEnd();
-
-			glPopMatrix();
-
-			glDepthMask(GL_TRUE);
-			glDisable(GL_BLEND);
-		}
-
-		glBindTexture(GL_TEXTURE_2D, 0);
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 
 	glPopMatrix();
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 
     glutSwapBuffers();
 }
@@ -581,7 +652,7 @@ void reshape(GLint w, GLint h){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(40, ra, 0.1, 201);
+	gluPerspective(45, ra, 0.1, 5001);
 }
 
 void update(){
@@ -589,35 +660,33 @@ void update(){
 	int hora_actual = glutGet(GLUT_ELAPSED_TIME);
 	float tiempo_transcurrido = (hora_actual - hora_anterior) / 1000.0f;
 
-	camara_pos_y += (velocidad_nave * tiempo_transcurrido) * sin(deg_to_rad(angulo_cabeceo)) * cos(deg_to_rad(angulo_guino));	
-	camara_lookat_y = sin(deg_to_rad(angulo_cabeceo)) * cos(deg_to_rad(angulo_guino)) + camara_pos_y;
-	camara_pos_x += (velocidad_nave * tiempo_transcurrido) * sin(deg_to_rad(angulo_guino)) * sin(deg_to_rad(angulo_cabeceo));
-	camara_lookat_x = sin(deg_to_rad(angulo_cabeceo)) * sin(deg_to_rad(angulo_guino)) + camara_pos_x;
-	camara_pos_z += (velocidad_nave * tiempo_transcurrido) * cos(deg_to_rad(angulo_cabeceo));
-	camara_lookat_z = cos(deg_to_rad(angulo_cabeceo)) + camara_pos_z;
+	camara_pos.y += (velocidad_nave * tiempo_transcurrido) * sin(deg_to_rad(angulo_cabeceo)) * cos(deg_to_rad(angulo_guino));	
+	camara_lookat.y = sin(deg_to_rad(angulo_cabeceo)) * cos(deg_to_rad(angulo_guino)) + camara_pos.y;
+	camara_pos.x += (velocidad_nave * tiempo_transcurrido) * sin(deg_to_rad(angulo_guino)) * sin(deg_to_rad(angulo_cabeceo));
+	camara_lookat.x = sin(deg_to_rad(angulo_cabeceo)) * sin(deg_to_rad(angulo_guino)) + camara_pos.x;
+	camara_pos.z += (velocidad_nave * tiempo_transcurrido) * cos(deg_to_rad(angulo_cabeceo));
+	camara_lookat.z = cos(deg_to_rad(angulo_cabeceo)) + camara_pos.z;
 
-	for(int i = 0; i < 2; i++){
-		asteroides[i].translate.x += tiempo_transcurrido * asteroides[i].velocidad;
+	for(int i = 0; i < ASTEROIDES; i++){
+		asteroides[i].translate.y += (asteroides[i].velocidad * tiempo_transcurrido) * sin(deg_to_rad(asteroides[i].angulo_cabeceo)) * cos(deg_to_rad(asteroides[i].angulo_guino));
+		asteroides[i].translate.x += (asteroides[i].velocidad * tiempo_transcurrido) * sin(deg_to_rad(asteroides[i].angulo_cabeceo)) * sin(deg_to_rad(asteroides[i].angulo_guino));
+		asteroides[i].translate.z += (asteroides[i].velocidad * tiempo_transcurrido) * cos(deg_to_rad(asteroides[i].angulo_cabeceo));
+		
 		asteroides[i].rotate_grados += tiempo_transcurrido * asteroides[i].rotation_speed;
 		if(asteroides[i].rotate_grados >= 360)
 			asteroides[i].rotate_grados = 0;
-
-		if(asteroides[i].translate.x >= 100)
-			asteroides[i].translate.x = -100;
 	}
 
-	asteroides[2].translate.y -= tiempo_transcurrido * asteroides[2].velocidad;
-	asteroides[2].rotate_grados += tiempo_transcurrido * asteroides[2].rotation_speed;
-	if(asteroides[2].rotate_grados >= 360)
-		asteroides[2].rotate_grados = 0;
-
-	if(asteroides[2].translate.y <= -100)
-		asteroides[2].translate.y = 100;
-
 	for(int i = 0; i < bullets.size(); i++){
-		bullets.at(i).position.y += (30 * tiempo_transcurrido) * sin(deg_to_rad(bullets.at(i).angulo_cabeceo)) * cos(deg_to_rad(bullets.at(i).angulo_guino));
-		bullets.at(i).position.x += (30 * tiempo_transcurrido) * sin(deg_to_rad(bullets.at(i).angulo_cabeceo)) * sin(deg_to_rad(bullets.at(i).angulo_guino));	
-		bullets.at(i).position.z += (30 * tiempo_transcurrido) * cos(deg_to_rad(bullets.at(i).angulo_cabeceo));
+		bullets.at(i).position.y += (50 * tiempo_transcurrido) * sin(deg_to_rad(bullets.at(i).angulo_cabeceo)) * cos(deg_to_rad(bullets.at(i).angulo_guino));
+		bullets.at(i).position.x += (50 * tiempo_transcurrido) * sin(deg_to_rad(bullets.at(i).angulo_cabeceo)) * sin(deg_to_rad(bullets.at(i).angulo_guino));	
+		bullets.at(i).position.z += (50 * tiempo_transcurrido) * cos(deg_to_rad(bullets.at(i).angulo_cabeceo));
+
+		bullets.at(i).distance_traveled += 1;
+
+		if(bullets.at(i).distance_traveled >= 500){
+			bullets.erase(bullets.begin() + i);
+		}
 	}
 
 	rotacion_tierra += tiempo_transcurrido * 10;
@@ -632,8 +701,7 @@ void onTimer(int tiempo){
 	update();
 }
 
-// Atender el movimiento del raton
-void onPassiveMotion(int x, int y){
+void girar(int x, int y){
 
 	if(raton_y == 0){
 		raton_y = y;
@@ -653,8 +721,8 @@ void onPassiveMotion(int x, int y){
 	if(angulo_cabeceo > 180.0){
 		angulo_cabeceo = 180.0;
 	}
-	if(angulo_cabeceo < 0.0){
-		angulo_cabeceo = 0.0;
+	if(angulo_cabeceo <= 0.1){
+		angulo_cabeceo = 0.1;
 	}
 	if(angulo_guino > 360.0){
 		angulo_guino = 0.0;
@@ -662,6 +730,16 @@ void onPassiveMotion(int x, int y){
 	if(angulo_guino < -360.0){
 		angulo_guino = 0.0;
 	}
+
+}
+
+//Atender el movimiento del raton
+void onPassiveMotion(int x, int y){
+	angulo_cabeceo = ac_aux;
+	angulo_guino = ag_aux;
+	passiveMotion = true;
+	girar(x, y);
+
 }
 
 void onKey(unsigned char key, int x, int y){
@@ -697,9 +775,14 @@ void onKey(unsigned char key, int x, int y){
 	}
 
 	if(key == 'd'){
-		Bullet bullet = Bullet(Vec3(camara_lookat_x, camara_lookat_y, camara_lookat_z), angulo_guino, angulo_cabeceo);
+		Bullet bullet = Bullet(Vec3(camara_lookat.x, camara_lookat.y, camara_lookat.z), angulo_guino, angulo_cabeceo);
 		bullets.push_back(bullet);
 	}
+}
+
+void onMotion(int x, int y){
+	passiveMotion = false;
+	girar(x, y);
 }
 
 int main(int argc, char** argv){
@@ -716,6 +799,7 @@ int main(int argc, char** argv){
 	glutReshapeFunc(reshape);
 	glutTimerFunc(int(1000 / TASA_REFRESCO), onTimer, int(1000 / TASA_REFRESCO));
 	glutPassiveMotionFunc(onPassiveMotion);
+	glutMotionFunc(onMotion);
 	glutKeyboardFunc(onKey);
 
 	init();
